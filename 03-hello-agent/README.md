@@ -76,12 +76,13 @@ npm run agent
 
 ## Connecting to Kiro
 
-### Kiro Hooks (The Simplest Way)
-This is what's most suitable for the current step:
+### Kiro Hooks (Project-Level Integration)
+This approach keeps agents at the project level, which is perfect for project-specific tooling:
 
 **How it works:**
-- Kiro can run your agent automatically when events occur
-- For example: when you save a TypeScript file, Kiro will run the linting agent
+- Each project has its own agents tailored to its specific needs
+- Kiro can run your project's agent automatically when events occur
+- For example: when you save a TypeScript file in this project, Kiro will run this project's linting agent
 
 **How to set it up:**
 1. Open Command Palette in Kiro (`Cmd+Shift+P`)
@@ -91,6 +92,7 @@ This is what's most suitable for the current step:
    - **File pattern**: "*.ts"
    - **Command**: `npm run agent`
    - **Working directory**: `03-hello-agent`
+
 
 ## Next Steps
 
