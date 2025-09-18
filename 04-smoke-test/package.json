@@ -1,0 +1,19 @@
+{
+  "name": "04-smoke-test",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "vitest run --reporter=dot",
+    "agent": "tsx agents/test-writer.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.1"
+  }
+}

@@ -1,0 +1,13 @@
+title: "Hello Test — Smoke Test Starter"
+goal: "Introduce Vitest and a basic green test suite for agents to extend later."
+level: "beginner"
+topics: ["typescript", "testing"]
+entry: "src/index.ts"
+constraints:
+  writePaths: ["tests/**"]
+acceptance:
+  - "npm test exits with code 0"
+  - "at least 1 test is executed"
+hints:
+  - "Prefer pure functions so tests are deterministic."
+  - "Keep tests small and fast."

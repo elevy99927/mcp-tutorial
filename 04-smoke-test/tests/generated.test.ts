@@ -1,0 +1,87 @@
+import { describe, it, expect } from "vitest";
+import { add, sum, multiply, subtract, divide, greet, capitalize } from "../src/index.js";
+
+describe("add", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for add
+    expect(add).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for add
+    expect(typeof add).toBe('function');
+  });
+});
+
+describe("sum", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for sum
+    expect(sum).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for sum
+    expect(typeof sum).toBe('function');
+  });
+});
+
+describe("multiply", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for multiply
+    expect(multiply).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for multiply
+    expect(typeof multiply).toBe('function');
+  });
+});
+
+describe("subtract", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for subtract
+    expect(subtract).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for subtract
+    expect(typeof subtract).toBe('function');
+  });
+});
+
+describe("divide", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for divide
+    expect(divide).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for divide
+    expect(typeof divide).toBe('function');
+  });
+});
+
+describe("greet", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for greet
+    expect(greet).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for greet
+    expect(typeof greet).toBe('function');
+  });
+});
+
+describe("capitalize", () => {
+  it("should work with basic inputs", () => {
+    // TODO: Add meaningful test cases for capitalize
+    expect(capitalize).toBeDefined();
+  });
+  
+  it("should handle edge cases", () => {
+    // TODO: Add edge case tests for capitalize
+    expect(typeof capitalize).toBe('function');
+  });
+});
+
