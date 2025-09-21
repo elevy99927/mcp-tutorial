@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Generated files
+tests/smoke.auto.test.ts
+mermaid/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

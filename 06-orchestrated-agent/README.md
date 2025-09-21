@@ -1,0 +1,86 @@
+# 06-Orchestrated-Agent
+
+A minimal orchestrator that reads one free‑form `instructions.md` and dispatches tasks to two child agents:
+
+- **Smoke‑Test Agent** → writes `tests/smoke.auto.test.ts`
+- **Mermaid Agent** → writes `mermaid/mermaid.md` with a simple flow diagram of the app
+
+No MCP; runs purely on npm + TypeScript + Vitest.
+
+## TL;DR
+
+```bash
+cd 06-orchestrated-agent
+npm install
+npm run agent    # Orchestrator reads instructions.md and dispatches to sub-agents
+npm test         # Run generated smoke tests
+# Check mermaid/mermaid.md for the generated flow diagram
+```
+
+## Goals
+
+✅ Demonstrate a tiny orchestrator → sub‑agents pattern  
+✅ Auto‑create a green smoke test for src/  
+✅ Generate a Mermaid diagram (graph TD) describing modules/functions
+
+## Project Structure
+
+```
+06-orchestrated-agent/
+├─ package.json
+├─ tsconfig.json
+├─ instructions.md          # freeform instructions (HE/EN)
+├─ README.example.md        # optional helper for humans
+├─ src/
+│  ├─ index.ts
+│  └─ math.ts
+├─ tests/                   # created/filled automatically
+└─ agent/
+   ├─ orchestrator.ts       # main agent (reads instructions, routes tasks)
+   ├─ smoke-agent.ts        # creates tests/smoke.auto.test.ts
+   └─ mermaid-agent.ts      # creates mermaid.md (Mermaid "graph TD")
+```
+
+## How it Works
+
+1. **Orchestrator** (`agent/orchestrator.ts`) reads `instructions.md` and detects intents:
+   - **SMOKE** → run the Smoke‑Test Agent
+   - **FLOW** → run the Mermaid Agent  
+   - **SUMMARY** → print a short summary
+
+2. **Smoke‑Test Agent** writes `tests/smoke.auto.test.ts` that verifies modules load and calls functions
+
+3. **Mermaid Agent** scans `src/*.ts` for exported function names and produces `mermaid/mermaid.md` with a basic `graph TD` linking modules to their exported functions
+
+## Intent Detection
+
+Intents are detected via simple regex on the instruction text (supports English/Hebrew keywords):
+- **Smoke tests**: "smoke tests", "בדיקות עשן", "create test", "generate test"
+- **Flow diagrams**: "mermaid", "flow chart", "diagram", "תרשים", "זרימה"  
+- **Summary**: "summary", "סיכום", "overview"
+
+## Usage
+
+```bash
+# Install dependencies
+npm install
+
+# Run the orchestrator (reads instructions.md)
+npm run agent
+
+# Execute generated tests
+npm test
+
+# View the generated Mermaid diagram
+# Open mermaid/mermaid.md in any Mermaid viewer or Mermaid Live Editor
+```
+
+## Example Output
+
+The orchestrator will:
+1. 🎭 Read and analyze `instructions.md`
+2. 🔥 Dispatch to Smoke-Test Agent → generates comprehensive tests
+3. 📊 Dispatch to Mermaid Agent → creates visual flow diagram
+4. 📋 Generate project summary if requested
+
+All sub-agents report back to the orchestrator with their results!
