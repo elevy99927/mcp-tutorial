@@ -118,7 +118,3 @@ export function greet(name: string) {
 
 ---
 
-## Next steps (optional)
-
-* Add more simple intents: `lint`, "create file", "append text" (still no MCP).
-* Later, introduce MCP for stricter write permissions (e.g., only `tests/**`) and smooth KIRO integration.
