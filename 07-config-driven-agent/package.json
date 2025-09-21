@@ -1,0 +1,17 @@
+{
+  "name": "07-config-driven-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "agent": "tsx agent/orchestrator.ts",
+    "test": "vitest run --reporter=dot outputs/tests/",
+    "dev": "tsx src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.1"
+  }
+}

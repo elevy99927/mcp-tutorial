@@ -1,0 +1,38 @@
+{
+  "version": "0.1",
+  "agents": [
+    {
+      "name": "smoke-test-agent",
+      "capabilities": ["tests", "smoke"],
+      "defaultPolicy": {
+        "network": false,
+        "shell": false,
+        "fs": "restricted",
+        "writePaths": ["outputs/tests/**"],
+        "denyPaths": ["src/**", "node_modules/**"]
+      }
+    },
+    {
+      "name": "mermaid-agent",
+      "capabilities": ["docs", "diagram", "mermaid", "flow"],
+      "defaultPolicy": {
+        "network": false,
+        "shell": false,
+        "fs": "restricted",
+        "writePaths": ["outputs/mermaid/**"],
+        "denyPaths": ["src/**", "node_modules/**"]
+      }
+    },
+    {
+      "name": "readme-agent",
+      "capabilities": ["docs", "readme", "documentation"],
+      "defaultPolicy": {
+        "network": false,
+        "shell": false,
+        "fs": "restricted",
+        "writePaths": ["outputs/**"],
+        "denyPaths": ["src/**", "node_modules/**"]
+      }
+    }
+  ]
+}
