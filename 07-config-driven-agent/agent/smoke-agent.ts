@@ -111,7 +111,7 @@ import { describe, it, expect } from "vitest";
     // Import all functions from all files
     for (const { file, functions } of allFunctions) {
       if (functions.length > 0) {
-        content += `import { ${functions.join(', ')} } from "../src/${file}.js";\n`;
+        content += `import { ${functions.join(', ')} } from "../../src/${file}.js";\n`;
       }
     }
     
