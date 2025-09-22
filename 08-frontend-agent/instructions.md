@@ -5,7 +5,7 @@ This is step 08 of a tutorial for learning Agents and MCP integration. The proje
 
 ## Tasks:
 1. Read and assess all *.ts files under ./src folder
-2. Generate comprehensive smoke tests for all functions
+2. Generate comprehensive tests for all functions
 3. Create a mermaid flow diagram showing project structure
 4. Generate project README documentation
 5. Add email as additional input to the frontend login form

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { readFileSync, existsSync } from 'fs';
-import { SmokeAgent } from './smoke-agent.js';
+import { readFileSync, existsSync, rmSync } from 'fs';
+import { FrontendTestsAgent } from './frontend-tests.js';
 import { MermaidAgent } from './mermaid-agent.js';
 import { ReadmeAgent } from './readme-agent.js';
 import { FrontendAgent } from './frontend-agent.js';
@@ -11,14 +11,14 @@ import { FrontendAgent } from './frontend-agent.js';
  * Reads config/agents.json and instructions.md to dispatch tasks to specialized sub-agents
  */
 class OrchestratorAgent {
-  private smokeAgent: SmokeAgent;
+  private frontendTestsAgent: FrontendTestsAgent;
   private mermaidAgent: MermaidAgent;
   private readmeAgent: ReadmeAgent;
   private frontendAgent: FrontendAgent;
   private agentConfig: any;
 
   constructor() {
-    this.smokeAgent = new SmokeAgent();
+    this.frontendTestsAgent = new FrontendTestsAgent();
     this.mermaidAgent = new MermaidAgent();
     this.readmeAgent = new ReadmeAgent();
     this.frontendAgent = new FrontendAgent();
@@ -38,9 +38,26 @@ class OrchestratorAgent {
     }
   }
 
+  /**
+   * Clean outputs directory before starting
+   */
+  private cleanOutputsDirectory(): void {
+    try {
+      if (existsSync('outputs')) {
+        rmSync('outputs', { recursive: true, force: true });
+        console.log('🧹 Cleaned outputs/ directory');
+      }
+    } catch (error: any) {
+      console.log('⚠️  Could not clean outputs directory:', error.message);
+    }
+  }
+
   async processInstructions(): Promise<void> {
     console.log('🎭 Config-Driven Orchestrator: Loading configuration...');
     console.log(`📋 Loaded ${this.agentConfig.agents?.length || 0} agent configurations`);
+
+    // Clean outputs directory before starting
+    this.cleanOutputsDirectory();
 
     try {
       // Read instructions file
@@ -58,7 +75,7 @@ class OrchestratorAgent {
 
       if (intents.length === 0) {
         console.log('ℹ️  No actionable instructions found');
-        console.log('💡 Try adding: "smoke tests", "mermaid diagram", "readme", or "documentation"');
+        console.log('💡 Try adding: "generate tests", "mermaid diagram", "readme", or "documentation"');
         return;
       }
 
@@ -75,10 +92,10 @@ class OrchestratorAgent {
       console.log('\n✅ All tasks completed!');
       console.log('💡 All generated content is in the outputs/ directory:');
       console.log('   📄 outputs/README.auto.md - Generated documentation');
-      console.log('   🔥 outputs/tests/smoke.auto.test.ts - Generated tests');
+      console.log('   🧪 outputs/tests/frontend.test.ts - Dynamic frontend tests');
       console.log('   📊 outputs/tests/test-report.html - HTML test report');
       console.log('   📈 outputs/mermaid/mermaid.md - Generated diagrams');
-      console.log('   🎨 outputs/frontend.ts - Enhanced frontend code with email field');
+      console.log('   🎨 outputs/frontend.ts - Enhanced frontend code');
       console.log('   🌐 outputs/frontend/demo.html - Interactive demo');
 
     } catch (error: any) {
@@ -92,12 +109,14 @@ class OrchestratorAgent {
   private detectIntents(instructions: string): string[] {
     const intents: string[] = [];
 
-    // Smoke test patterns (English + Hebrew)
-    const smokePatterns = [
+    // Frontend test patterns (English + Hebrew)
+    const testPatterns = [
       /smoke\s+tests?/i,
       /בדיקות\s+עשן/i,
       /create.*test/i,
-      /generate.*test/i
+      /generate.*test/i,
+      /frontend.*test/i,
+      /test.*frontend/i
     ];
 
     // Mermaid/Flow patterns (English + Hebrew)
@@ -136,8 +155,8 @@ class OrchestratorAgent {
       /overview/i
     ];
 
-    if (smokePatterns.some(pattern => pattern.test(instructions))) {
-      intents.push('SMOKE');
+    if (testPatterns.some(pattern => pattern.test(instructions))) {
+      intents.push('TESTS');
     }
 
     if (flowPatterns.some(pattern => pattern.test(instructions))) {
@@ -164,7 +183,7 @@ class OrchestratorAgent {
    */
   private validateAgentCapabilities(intents: string[]): void {
     const intentToAgent = {
-      'SMOKE': 'smoke-test-agent',
+      'TESTS': 'frontend-tests-agent',
       'FLOW': 'mermaid-agent',
       'README': 'readme-agent',
       'FRONTEND': 'frontend-agent'
@@ -189,9 +208,9 @@ class OrchestratorAgent {
    */
   private async executeTask(intent: string): Promise<void> {
     switch (intent) {
-      case 'SMOKE':
-        console.log('🔥 Dispatching to Smoke-Test Agent...');
-        await this.smokeAgent.generateSmokeTests();
+      case 'TESTS':
+        console.log('🧪 Dispatching to Frontend Tests Agent...');
+        await this.frontendTestsAgent.generateFrontendTests();
         break;
 
       case 'FLOW':
@@ -227,7 +246,7 @@ class OrchestratorAgent {
       const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
       console.log(`📦 Project: ${packageJson.name} v${packageJson.version}`);
       console.log('🎭 Orchestrator with specialized sub-agents');
-      console.log('🔥 Smoke-Test Agent: Generates comprehensive test suites');
+      console.log('🧪 Frontend Tests Agent: Generates dynamic test suites based on actual code');
       console.log('📊 Mermaid Agent: Creates visual flow diagrams');
     } catch (error) {
       console.log('📦 Project summary not available');
