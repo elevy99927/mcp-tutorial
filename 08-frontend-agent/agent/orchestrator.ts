@@ -76,7 +76,8 @@ class OrchestratorAgent {
       console.log('💡 All generated content is in the outputs/ directory:');
       console.log('   📄 outputs/README.auto.md - Generated documentation');
       console.log('   🔥 outputs/tests/smoke.auto.test.ts - Generated tests');
-      console.log('   📊 outputs/mermaid/mermaid.md - Generated diagrams');
+      console.log('   📊 outputs/tests/test-report.html - HTML test report');
+      console.log('   📈 outputs/mermaid/mermaid.md - Generated diagrams');
       console.log('   🎨 outputs/frontend.ts - Enhanced frontend code with email field');
       console.log('   🌐 outputs/frontend/demo.html - Interactive demo');
 
