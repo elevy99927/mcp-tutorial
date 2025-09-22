@@ -105,20 +105,20 @@ cat outputs/tests/smoke.auto.test.ts # Comprehensive test suite
 
 ## Key Improvements from Chapter 06
 
-1. **🔧 Configuration Management**: Centralized agent config with capabilities and policies
-2. **📖 README Agent**: Automatic documentation generation
-3. **🔒 Security Policies**: File system restrictions and access controls
-4. **✅ Capability Validation**: Ensures agents can perform requested tasks
-5. **🎯 MCP Preparation**: Foundation for Model Context Protocol integration
+1. **Configuration Management**: Centralized agent config with capabilities and policies
+2. **README Agent**: Automatic documentation generation
+3. **Security Policies**: File system restrictions and access controls
+4. **Capability Validation**: Ensures agents can perform requested tasks
+5. **MCP Preparation**: Foundation for Model Context Protocol integration
 
 ## Example Output
 
 The orchestrator will:
-1. 🎭 Load agent configurations from `config/agents.json`
-2. ✅ Validate agent capabilities against requested tasks
-3. 🔥 Dispatch to Smoke-Test Agent → comprehensive tests
-4. 📊 Dispatch to Mermaid Agent → visual diagrams  
-5. 📖 Dispatch to README Agent → project documentation
-6. 📋 Generate summary if requested
+1. Load agent configurations from `config/agents.json`
+2. Validate agent capabilities against requested tasks
+3. Dispatch to Smoke-Test Agent → comprehensive tests
+4. Dispatch to Mermaid Agent → visual diagrams  
+5. Dispatch to README Agent → project documentation
+6. Generate summary if requested
 
 All agents operate within their configured security policies!
