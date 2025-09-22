@@ -21,14 +21,18 @@ export class MermaidAgent {
       // Generate Mermaid diagram
       const diagramContent = this.generateMermaidContent(modules);
       
-      // Ensure mermaid directory exists
-      if (!existsSync('mermaid')) {
-        mkdirSync('mermaid');
-        console.log('  📁 Created mermaid/ directory');
+      // Ensure outputs/mermaid directory exists
+      if (!existsSync('outputs')) {
+        mkdirSync('outputs');
+        console.log('  📁 Created outputs/ directory');
+      }
+      if (!existsSync('outputs/mermaid')) {
+        mkdirSync('outputs/mermaid');
+        console.log('  📁 Created outputs/mermaid/ directory');
       }
       
       // Write the diagram file
-      const diagramFile = 'mermaid/mermaid.md';
+      const diagramFile = 'outputs/mermaid/mermaid.md';
       writeFileSync(diagramFile, diagramContent);
       console.log(`  ✅ Generated ${diagramFile}`);
       

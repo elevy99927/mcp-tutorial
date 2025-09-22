@@ -49,7 +49,7 @@ class OrchestratorAgent {
       
       console.log('\n✅ All tasks completed!');
       console.log('💡 Run `npm test` to execute generated tests');
-      console.log('💡 Check `mermaid/mermaid.md` for generated diagrams');
+      console.log('💡 Check `outputs/mermaid/mermaid.md` for generated diagrams');
       
     } catch (error: any) {
       console.error('❌ Orchestrator error:', error.message);

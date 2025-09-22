@@ -11,10 +11,14 @@ export class SmokeAgent {
     console.log('  🔥 Smoke-Test Agent: Analyzing source code...');
     
     try {
-      // Ensure tests directory exists
-      if (!existsSync('tests')) {
-        mkdirSync('tests');
-        console.log('  📁 Created tests/ directory');
+      // Ensure outputs/tests directory exists
+      if (!existsSync('outputs')) {
+        mkdirSync('outputs');
+        console.log('  📁 Created outputs/ directory');
+      }
+      if (!existsSync('outputs/tests')) {
+        mkdirSync('outputs/tests');
+        console.log('  📁 Created outputs/tests/ directory');
       }
       
       // Scan all TypeScript files in src/
@@ -29,7 +33,7 @@ export class SmokeAgent {
       const testContent = this.generateSmokeTestContent(sourceFiles, allFunctions);
       
       // Write the test file
-      const testFile = 'tests/smoke.auto.test.ts';
+      const testFile = 'outputs/tests/smoke.auto.test.ts';
       writeFileSync(testFile, testContent);
       console.log(`  ✅ Generated ${testFile}`);
       
@@ -107,7 +111,7 @@ import { describe, it, expect } from "vitest";
     // Import all functions from all files
     for (const { file, functions } of allFunctions) {
       if (functions.length > 0) {
-        content += `import { ${functions.join(', ')} } from "../src/${file}.js";\n`;
+        content += `import { ${functions.join(', ')} } from "../../src/${file}.js";\n`;
       }
     }
     
