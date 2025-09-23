@@ -1,0 +1,33 @@
+{
+  "name": "09-front-back-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "agent": "tsx agent/orchestrator.ts",
+    "test": "vitest run --reporter=dot outputs/tests/",
+    "src:frontend": "tsx src/frontend.ts",
+    "src:backend": "tsx src/backend.ts",
+    "src:fullstack": "concurrently \"npm run src:backend\" \"npm run src:frontend\"",
+    "gen:frontend": "tsx outputs/frontend.ts",
+    "gen:backend": "tsx outputs/backend.ts",
+    "gen:fullstack": "concurrently \"npm run gen:backend\" \"npm run gen:frontend\"",
+    "dev": "npm run src:frontend",
+    "start": "npm run src:fullstack"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.1",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^2.0.16",
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
