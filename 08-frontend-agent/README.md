@@ -49,10 +49,10 @@ Follow these steps to learn how the frontend agent system works:
 2. **Identify the "add email" step** - Look for task #5: "Add email as additional input to the frontend login form"
 
 
-### Step 2: Test the Original Frontend
-3. **Run the original frontend server**:
+### Step 2: Test the Source Frontend
+3. **Run the source frontend server**:
    ```bash
-   npm run dev
+   npm run src
    ```
 4. **Browse to http://localhost:3000**
 5. **Login using only username and password**:
@@ -68,9 +68,9 @@ Follow these steps to learn how the frontend agent system works:
    ```
    This will read instructions.md and generate enhanced frontend code with email field
 
-8. **Run the enhanced frontend**:
+8. **Run the generated frontend**:
    ```bash
-   npm run qa
+   npm run gen
    ```
    This runs the generated frontend from `outputs/frontend.ts`
 
@@ -91,7 +91,7 @@ Follow these steps to learn how the frontend agent system works:
 13. **Run the agent again**:
     ```bash
     npm run agent
-    npm run qa
+    npm run gen
     ```
 
 14. **Test the new fields** - Browse to http://localhost:3000 and see the additional fields

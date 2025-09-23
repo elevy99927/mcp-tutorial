@@ -6,9 +6,10 @@
   "scripts": {
     "agent": "tsx agent/orchestrator.ts",
     "test": "vitest run --reporter=dot outputs/tests/",
-    "qa": "tsx outputs/frontend.ts",
-    "dev": "tsx src/frontend.ts",
-    "start": "tsx src/frontend.ts"
+    "src": "tsx src/frontend.ts",
+    "gen": "tsx outputs/frontend.ts",
+    "dev": "npm run src",
+    "start": "npm run src"
   },
   "devDependencies": {
     "@types/node": "^24.5.1",
