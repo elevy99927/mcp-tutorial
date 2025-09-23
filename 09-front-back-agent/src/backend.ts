@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 interface User {
   id: string;
   username: string;
-  email?: string;
   password: string; // In production, this would be hashed
   createdAt: Date;
 }
@@ -28,7 +27,6 @@ interface User {
 interface LoginRequest {
   username: string;
   password: string;
-  email?: string;
 }
 
 interface AuthResponse {
@@ -37,7 +35,6 @@ interface AuthResponse {
   user?: {
     id: string;
     username: string;
-    email?: string;
   };
 }
 
@@ -47,7 +44,6 @@ const users: User[] = [
   {
     id: '1',
     username: 'admin',
-    email: 'admin@example.com',
     password: '123456', // In production: hash this
     createdAt: new Date()
   }
@@ -56,17 +52,14 @@ const users: User[] = [
 // ===== VALIDATION FUNCTIONS =====
 
 function validateUsername(username: string): boolean {
-  return username.length >= 3 && username.length <= 20;
+  return username && username.length >= 3 && username.length <= 20;
 }
 
 function validatePassword(password: string): boolean {
-  return password.length >= 6;
+  return password && password.length >= 6;
 }
 
-function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+
 
 // ===== AUTHENTICATION LOGIC =====
 
@@ -78,16 +71,12 @@ function authenticateUser(loginData: LoginRequest): AuthResponse {
   const errors: string[] = [];
 
   // Validate input
-  if (!validateUsername(loginData.username)) {
+  if (!validateUsername(loginData.username || '')) {
     errors.push('Username must be between 3 and 20 characters');
   }
 
-  if (!validatePassword(loginData.password)) {
+  if (!validatePassword(loginData.password || '')) {
     errors.push('Password must be at least 6 characters');
-  }
-
-  if (loginData.email && !validateEmail(loginData.email)) {
-    errors.push('Please enter a valid email address');
   }
 
   if (errors.length > 0) {
@@ -111,8 +100,7 @@ function authenticateUser(loginData: LoginRequest): AuthResponse {
     message: 'Login successful',
     user: {
       id: user.id,
-      username: user.username,
-      email: user.email
+      username: user.username
     }
   };
 }
@@ -128,6 +116,52 @@ function requireAuth(req: any, res: any, next: any) {
 
 // ===== API ROUTES =====
 
+// Root endpoint - lists all available endpoints
+app.get('/', (req, res) => {
+  const endpoints = [
+    {
+      method: 'GET',
+      path: '/',
+      description: 'List all available API endpoints'
+    },
+    {
+      method: 'GET',
+      path: '/api/health',
+      description: 'Health check endpoint'
+    },
+    {
+      method: 'POST',
+      path: '/api/auth/login',
+      description: 'User authentication',
+      body: { username: 'string', password: 'string' }
+    },
+    {
+      method: 'GET',
+      path: '/api/users',
+      description: 'Get list of all users'
+    },
+    {
+      method: 'POST',
+      path: '/api/users',
+      description: 'Create new user (registration)',
+      body: { username: 'string', password: 'string' }
+    }
+  ];
+
+  res.json({
+    service: 'Backend API Server',
+    version: '1.0.0',
+    port: PORT,
+    timestamp: new Date().toISOString(),
+    endpoints: endpoints,
+    usage: {
+      frontend: 'http://localhost:3000',
+      health: `http://localhost:${PORT}/api/health`,
+      users: `http://localhost:${PORT}/api/users`
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({
@@ -140,16 +174,15 @@ app.get('/api/health', (req, res) => {
 
 // Authentication endpoint
 app.post('/api/auth/login', (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password } = req.body;
 
   const loginData: LoginRequest = {
     username: username || '',
-    password: password || '',
-    email: email || undefined
+    password: password || ''
   };
 
   const result = authenticateUser(loginData);
-  
+
   if (result.success) {
     res.json(result);
   } else {
@@ -162,7 +195,6 @@ app.get('/api/users', (req, res) => {
   const userList = users.map(user => ({
     id: user.id,
     username: user.username,
-    email: user.email,
     createdAt: user.createdAt
   }));
 
@@ -174,21 +206,17 @@ app.get('/api/users', (req, res) => {
 
 // Create new user (registration)
 app.post('/api/users', (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password } = req.body;
 
   // Validate input
   const errors: string[] = [];
-  
-  if (!validateUsername(username)) {
+
+  if (!validateUsername(username || '')) {
     errors.push('Username must be between 3 and 20 characters');
   }
 
-  if (!validatePassword(password)) {
+  if (!validatePassword(password || '')) {
     errors.push('Password must be at least 6 characters');
-  }
-
-  if (email && !validateEmail(email)) {
-    errors.push('Please enter a valid email address');
   }
 
   // Check if user already exists
@@ -207,7 +235,6 @@ app.post('/api/users', (req, res) => {
   const newUser: User = {
     id: (users.length + 1).toString(),
     username,
-    email,
     password, // In production: hash this
     createdAt: new Date()
   };
@@ -219,8 +246,7 @@ app.post('/api/users', (req, res) => {
     message: 'User created successfully',
     user: {
       id: newUser.id,
-      username: newUser.username,
-      email: newUser.email
+      username: newUser.username
     }
   });
 });

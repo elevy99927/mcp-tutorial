@@ -1,4 +1,6 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, promises as fs } from 'fs';
+import { join } from 'path';
+import { randomUUID } from 'crypto';
 
 /**
  * Frontend Tests Agent
@@ -31,6 +33,9 @@ export class FrontendTestsAgent {
       const reportFile = 'outputs/tests/test-report.html';
       writeFileSync(reportFile, htmlReport);
       console.log(`  ✅ Generated ${reportFile}`);
+      
+      // Check if we should request backend changes
+      await this.checkForBackendRequests(codeAnalysis);
       
     } catch (error: any) {
       console.error('  ❌ Frontend Tests Agent error:', error.message);
@@ -674,6 +679,77 @@ npm run test:watch
     }
   }
   
+  /**
+   * Check if backend changes are needed based on frontend analysis
+   */
+  private async checkForBackendRequests(analysis: CodeAnalysis): Promise<void> {
+    // Check if instructions mention email but frontend doesn't have it
+    const instructions = this.readInstructions();
+    const hasEmailInInstructions = /email/i.test(instructions);
+    const hasEmailInFrontend = analysis.fields.some(f => f.name === 'email');
+    
+    if (hasEmailInInstructions && !hasEmailInFrontend) {
+      console.log('  🔍 Instructions mention email but frontend lacks email field');
+      console.log('  📬 Requesting backend to add email support...');
+      await this.requestBackendApiChange({
+        name: "email",
+        type: "string", 
+        required: true,
+        format: "email"
+      });
+    }
+  }
+  
+  /**
+   * Read instructions from instructions.md
+   */
+  private readInstructions(): string {
+    try {
+      return readFileSync('instructions.md', 'utf8');
+    } catch (error) {
+      return '';
+    }
+  }
+
+  /**
+   * Request backend API change via mailbox system
+   */
+  async requestBackendApiChange(field = { name: "email", type: "string", required: true, format: "email" }): Promise<void> {
+    console.log('  📬 Frontend Tests Agent: Requesting backend API change...');
+    
+    try {
+      const id = `REQ-${new Date().toISOString().slice(0, 10)}-${randomUUID().slice(0, 6)}`;
+      const request = {
+        id,
+        from: "frontend-tests-agent",
+        to: "backend-agent",
+        intent: "API_CHANGE",
+        scope: "backend-users",
+        payload: {
+          resource: "/auth/login",
+          change: "ADD_FIELD",
+          field
+        },
+        links: { spec: "contracts/auth/openapi.yaml" },
+        policySnapshot: {
+          writePaths: ["outputs/backend/**"],
+          denyPaths: ["src/**", "apps/**"]
+        },
+        createdAt: new Date().toISOString()
+      };
+      
+      const dir = "comms/requests/to-backend";
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(join(dir, `${id}.json`), JSON.stringify(request, null, 2));
+      
+      console.log(`  📨 Frontend → Backend request: ${id}`);
+      console.log(`  🔧 Requesting: ${request.payload.change} ${field.name} to ${request.payload.resource}`);
+      
+    } catch (error: any) {
+      console.error('  ❌ Frontend mailbox request error:', error.message);
+    }
+  }
+
   /**
    * Capitalize first letter of string
    */

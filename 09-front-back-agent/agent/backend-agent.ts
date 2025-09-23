@@ -242,6 +242,137 @@ initializeDatabase();`;
   }
   
   /**
+   * Apply API change from mailbox request
+   */
+  async applyApiChange(payload: any): Promise<{ artifacts: string[], notes: string }> {
+    console.log('  📬 Backend Agent: Processing API change request...');
+    
+    try {
+      const { resource, change, field } = payload;
+      console.log(`  🔧 Applying ${change} to ${resource}`);
+      
+      // Ensure outputs directory exists
+      this.ensureOutputDirectories();
+      
+      // Read current backend code
+      const currentCode = this.readCurrentCode();
+      
+      let enhancedCode = currentCode;
+      const artifacts: string[] = [];
+      let notes = '';
+      
+      // Apply the requested change
+      switch (change) {
+        case 'ADD_FIELD':
+          enhancedCode = this.addFieldToResource(enhancedCode, resource, field);
+          artifacts.push('outputs/backend.ts');
+          notes = `Added ${field.name} field to ${resource} endpoint with validation`;
+          break;
+          
+        default:
+          notes = `Unknown change type: ${change}`;
+      }
+      
+      // Write enhanced backend file
+      const timestamp = new Date().toISOString();
+      const headerComment = `// Enhanced by Backend Agent ⚙️ (via mailbox)
+// Created: ${timestamp}
+// Agent: agent/backend-agent.ts
+// Change: ${change} ${field?.name || ''} to ${resource}
+
+`;
+      
+      enhancedCode = headerComment + enhancedCode;
+      writeFileSync('outputs/backend.ts', enhancedCode);
+      
+      console.log(`  ✅ Applied ${change} to ${resource}`);
+      
+      return { artifacts, notes };
+      
+    } catch (error: any) {
+      console.error('  ❌ Backend Agent API change error:', error.message);
+      return { 
+        artifacts: [], 
+        notes: `Error applying change: ${error.message}` 
+      };
+    }
+  }
+  
+  /**
+   * Add field to a specific resource/endpoint
+   */
+  private addFieldToResource(code: string, resource: string, field: any): string {
+    const fieldName = field.name;
+    const fieldType = field.type;
+    const isRequired = field.required;
+    
+    // Add field to interfaces
+    if (resource.includes('login') || resource.includes('auth')) {
+      // Add to LoginRequest interface
+      code = code.replace(
+        /interface LoginRequest \{([^}]*)\}/s,
+        (match, content) => {
+          if (!content.includes(fieldName)) {
+            const newField = `  ${fieldName}${isRequired ? '' : '?'}: ${fieldType};`;
+            return `interface LoginRequest {${content}\n${newField}\n}`;
+          }
+          return match;
+        }
+      );
+      
+      // Add to User interface if needed
+      code = code.replace(
+        /interface User \{([^}]*)\}/s,
+        (match, content) => {
+          if (!content.includes(fieldName)) {
+            const newField = `  ${fieldName}${isRequired ? '' : '?'}: ${fieldType};`;
+            return `interface User {${content}\n${newField}\n}`;
+          }
+          return match;
+        }
+      );
+      
+      // Add validation function
+      if (fieldType === 'string' && field.format === 'email') {
+        const validationFunction = `
+function validate${this.capitalize(fieldName)}(${fieldName}: string): boolean {
+  const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  return ${fieldName} && emailRegex.test(${fieldName});
+}
+`;
+        
+        // Insert validation function after existing validation functions
+        const insertPoint = code.indexOf('// ===== AUTHENTICATION LOGIC =====');
+        if (insertPoint !== -1) {
+          code = code.slice(0, insertPoint) + validationFunction + '\n' + code.slice(insertPoint);
+        }
+      }
+      
+      // Update authentication logic to include new field
+      code = code.replace(
+        /const { username, password } = req\.body;/g,
+        `const { username, password, ${fieldName} } = req.body;`
+      );
+      
+      // Add validation in authenticateUser function
+      if (isRequired) {
+        const validationCheck = `
+  if (!validate${this.capitalize(fieldName)}(loginData.${fieldName} || '')) {
+    errors.push('${this.capitalize(fieldName)} is required and must be valid');
+  }
+`;
+        
+        code = code.replace(
+          /if \(!validatePassword\(loginData\.password \|\| ''\)\) \{[^}]*\}/,
+          (match) => match + validationCheck
+        );
+      }
+    }
+    
+    return code;
+  }
+
+  /**
    * Capitalize first letter of string
    */
   private capitalize(str: string): string {

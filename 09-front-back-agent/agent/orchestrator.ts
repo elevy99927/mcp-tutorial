@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { readFileSync, existsSync, rmSync } from 'fs';
+import { readFileSync, existsSync, rmSync, promises as fs } from 'fs';
+import { join } from 'path';
 import { FrontendTestsAgent } from './frontend-tests.js';
 import { BackendTestsAgent } from './backend-tests.js';
 import { MermaidAgent } from './mermaid-agent.js';
@@ -66,6 +67,9 @@ class OrchestratorAgent {
     // Clean outputs directory before starting
     this.cleanOutputsDirectory();
 
+    // Process mailbox requests first
+    await this.processMailboxRequests();
+
     try {
       // Read instructions file
       if (!existsSync('instructions.md')) {
@@ -74,7 +78,7 @@ class OrchestratorAgent {
       }
 
       const instructions = readFileSync('instructions.md', 'utf8');
-      console.log('� Founyd instructions.md');
+      console.log('📋 Found instructions.md');
       console.log('🔍 Analyzing instructions for tasks...\n');
 
       // Detect intents and dispatch to sub-agents
@@ -144,7 +148,7 @@ class OrchestratorAgent {
       /docs/i,
       /תיעוד/i
     ];
-    
+
     // Frontend patterns
     const frontendPatterns = [
       /frontend/i,
@@ -294,6 +298,109 @@ class OrchestratorAgent {
   }
 
   /**
+   * Process mailbox requests from frontend to backend
+   */
+  private async processMailboxRequests(): Promise<void> {
+    try {
+      const requestsDir = 'comms/requests/to-backend';
+
+      // Create directories if they don't exist
+      await fs.mkdir(requestsDir, { recursive: true });
+      await fs.mkdir('comms/events/from-backend', { recursive: true });
+      await fs.mkdir('comms/requests/_processed', { recursive: true });
+
+      // Check for pending requests
+      const files = await fs.readdir(requestsDir).catch(() => []);
+      const requestFiles = files.filter(f => f.endsWith('.json'));
+
+      if (requestFiles.length === 0) {
+        return; // No requests to process
+      }
+
+      console.log('📬 Processing mailbox requests...');
+      console.log(`📨 Found ${requestFiles.length} pending request(s)\n`);
+
+      for (const file of requestFiles) {
+        await this.processMailboxRequest(file);
+      }
+
+      console.log('📬 Mailbox processing complete\n');
+    } catch (error: any) {
+      console.error('❌ Mailbox processing error:', error.message);
+    }
+  }
+
+  /**
+   * Process a single mailbox request
+   */
+  private async processMailboxRequest(filename: string): Promise<void> {
+    try {
+      const requestPath = join('comms/requests/to-backend', filename);
+      const requestData = await fs.readFile(requestPath, 'utf8');
+      const request = JSON.parse(requestData);
+
+      console.log(`📨 Processing request: ${request.id}`);
+      console.log(`   From: ${request.from} → To: ${request.to}`);
+      console.log(`   Intent: ${request.intent}`);
+      console.log(`   Scope: ${request.scope}`);
+
+      // Basic routing check
+      if (request.to !== 'backend-agent') {
+        console.log(`⚠️  Request not for backend-agent, skipping`);
+        return;
+      }
+
+      // Policy validation
+      const writePaths = request.policySnapshot?.writePaths || [];
+      const hasValidWritePath = writePaths.some((path: string) => path.startsWith('outputs/'));
+
+      if (!hasValidWritePath) {
+        console.log(`🚫 Policy blocked request ${request.id}: invalid write paths`);
+        return;
+      }
+
+      // Process the request based on intent
+      let result;
+      switch (request.intent) {
+        case 'API_CHANGE':
+          result = await this.backendAgent.applyApiChange(request.payload);
+          break;
+        default:
+          result = {
+            artifacts: [],
+            notes: `Unknown intent: ${request.intent}`
+          };
+      }
+
+      // Create response event
+      const event = {
+        id: `EVT-${request.id.replace('REQ-', '')}`,
+        correlates: request.id,
+        agent: 'backend-agent',
+        status: 'DONE',
+        artifacts: result.artifacts || [],
+        notes: result.notes || 'Request processed',
+        createdAt: new Date().toISOString()
+      };
+
+      // Write event to mailbox
+      const eventPath = join('comms/events/from-backend', `${event.id}.json`);
+      await fs.writeFile(eventPath, JSON.stringify(event, null, 2));
+
+      // Move processed request
+      const processedPath = join('comms/requests/_processed', filename);
+      await fs.rename(requestPath, processedPath);
+
+      console.log(`✅ Request ${request.id} processed successfully`);
+      console.log(`   Event: ${event.id}`);
+      console.log(`   Artifacts: ${event.artifacts.length} file(s)`);
+
+    } catch (error: any) {
+      console.error(`❌ Failed to process request ${filename}:`, error.message);
+    }
+  }
+
+  /**
    * Generate a simple project summary
    */
   private generateSummary(): void {
@@ -306,6 +413,7 @@ class OrchestratorAgent {
       console.log('📊 Mermaid Agent: Creates system topology diagrams');
       console.log('🎨 Frontend Agent: Enhances UI and forms');
       console.log('⚙️ Backend Agent: Enhances API and database features');
+      console.log('📬 Mailbox System: Frontend→Backend communication via file requests');
     } catch (error) {
       console.log('📦 Project summary not available');
     }

@@ -15,6 +15,13 @@ This is step 09 of a tutorial for learning Agents and MCP integration. The proje
 7. Create HTML test reports for both services
 8. Provide full-stack system summary
 
+## Agent Communication System:
+Frontend agents can request backend changes via file-based mailbox system:
+- Frontend writes requests to `comms/requests/to-backend/`
+- Backend processes requests and writes events to `comms/events/from-backend/`
+- All changes go through orchestrator with policy enforcement
+- Example: Frontend can request "add email field to login" and Backend will implement it
+
 ## Architecture:
 - **Frontend (port 3000)**: User interface, form validation, API calls to backend
 - **Backend (port 3001)**: REST API, authentication, user data management
