@@ -1,17 +1,18 @@
 # Instructions for Full-Stack Agent System
 
 ## Project Context
-This is step 09 of a tutorial for learning Agents and MCP integration. The project demonstrates full-stack agent orchestration with frontend and backend separation. The system includes:
+The project demonstrates full-stack agent orchestration with frontend and backend separation. 
+The system includes:
 - Frontend server (`src/frontend.ts`) on port 3000 - handles UI and user interaction
 - Backend API (`src/backend.ts`) on port 3001 - handles authentication and data
 
 ## Tasks:
-1. Create backend API with authentication endpoints
-2. Connect frontend to backend for user authentication  
+1. Create backend API. Do not use authenticateToken 
+2. Connect frontend to backend for user verification  
 3. Generate comprehensive tests for both frontend and backend
 4. Create system topology diagram showing full-stack architecture
 5. Generate project README documentation
-6. Add email field to user registration
+6. Add phone field to user registration
 7. Create HTML test reports for both services
 8. Provide full-stack system summary
 
@@ -20,11 +21,12 @@ Frontend agents can request backend changes via file-based mailbox system:
 - Frontend writes requests to `comms/requests/to-backend/`
 - Backend processes requests and writes events to `comms/events/from-backend/`
 - All changes go through orchestrator with policy enforcement
-- Example: Frontend can request "add email field to login" and Backend will implement it
+- Example: Frontend can request "add [fieldname] field to login" and Backend will implement it
+
 
 ## Architecture:
 - **Frontend (port 3000)**: User interface, form validation, API calls to backend
-- **Backend (port 3001)**: REST API, authentication, user data management
+- **Backend (port 3001)**: REST API, user validation, user data management
 - **Communication**: Frontend sends HTTP requests to backend API
 - **Authentication**: Username/password validation (no tokens needed for this tutorial)
 - **Credentials**: admin/123456

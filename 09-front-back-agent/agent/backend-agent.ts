@@ -177,7 +177,7 @@ ${enhancedCode}`;
   private addApiEndpoint(code: string, endpointName: string): string {
     const endpoint = `
 // ${this.capitalize(endpointName)} endpoint
-app.get('/api/${endpointName}', authenticateToken, (req, res) => {
+app.get('/api/${endpointName}', (req, res) => {
   res.json({
     message: '${this.capitalize(endpointName)} endpoint',
     timestamp: new Date().toISOString(),
@@ -185,7 +185,7 @@ app.get('/api/${endpointName}', authenticateToken, (req, res) => {
   });
 });
 
-app.post('/api/${endpointName}', authenticateToken, (req, res) => {
+app.post('/api/${endpointName}', (req, res) => {
   const data = req.body;
   res.status(201).json({
     message: '${this.capitalize(endpointName)} created',
