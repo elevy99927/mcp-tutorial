@@ -3,18 +3,29 @@
 ## Project Context
 The project demonstrates full-stack agent orchestration with frontend and backend separation. 
 The system includes:
-- Frontend server (`src/frontend.ts`) on port 3000 - handles UI and user interaction
-- Backend API (`src/backend.ts`) on port 3001 - handles authentication and data
+- Frontend server (`src/frontend/frontend.ts`) on port 3000 - handles UI and user interaction
+- Backend API (`src/backend/backend.ts`) on port 3001 - handles authentication and data
+- Agents Configuration locates in config/agents.json 
+- every agent MUST add his name to every file it create as comment in the file.
+- Frontend-agent will run befor Backend-agent
 
 ## Tasks:
-1. Create backend API. Do not use authenticateToken 
-2. Connect frontend to backend for user verification  
-3. Generate comprehensive tests for both frontend and backend
-4. Create system topology diagram showing full-stack architecture
-5. Generate project README documentation
-6. Add phone field to user registration
-7. Create HTML test reports for both services
-8. Provide full-stack system summary
+0. Generate frontend enhancements
+1. add phone field to the frontend registration form UI
+2. update the backend API, to support the phone field
+3. update the frontend UI Registration forms, to support the phone field. do not change the login form.
+4. keep the frontend to backend communication
+5. Do not add new API. you can just change existing APIs
+6. update all API responses to include the phone field
+7. update the GET /api/users endpoint to return phone field in user data
+
+
+
+## General Tasks
+1. Generate comprehensive tests for both frontend and backend
+2. Create system topology diagram showing full-stack architecture
+3. Create HTML test reports for both services
+4. Provide full-stack system summary
 
 ## Agent Communication System:
 Frontend agents can request backend changes via file-based mailbox system:
@@ -29,10 +40,9 @@ Frontend agents can request backend changes via file-based mailbox system:
 - **Backend (port 3001)**: REST API, user validation, user data management
 - **Communication**: Frontend sends HTTP requests to backend API
 - **Authentication**: Username/password validation (no tokens needed for this tutorial)
-- **Credentials**: admin/123456
 
 ## Output Requirements:
-- All artifacts must go in ./outputs folder
+- All artifacts must go in ./outputs folder or one of it's subfolders according to ./conf/agents.json.
 - Include agent attribution in generated files
 - Generate both frontend and backend enhanced versions
 

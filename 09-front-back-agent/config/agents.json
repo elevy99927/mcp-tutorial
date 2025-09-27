@@ -43,7 +43,19 @@
         "fs": "restricted",
         "writePaths": ["outputs/frontend/**"],
         "denyPaths": ["node_modules/**"],
-        "readPaths": ["src/**"]
+        "readPaths": ["src/frontend/**"]
+      }
+    },
+    {
+      "name": "backend-agent",
+      "capabilities": ["backend", "api", "validation"],
+      "defaultPolicy": {
+        "network": false,
+        "shell": false,
+        "fs": "restricted",
+        "writePaths": ["outputs/backend/**"],
+        "denyPaths": ["node_modules/**"],
+        "readPaths": ["src/backend/**"]
       }
     }
   ]
